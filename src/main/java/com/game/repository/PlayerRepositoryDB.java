@@ -1,18 +1,36 @@
 package com.game.repository;
 
 import com.game.entity.Player;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 import org.springframework.stereotype.Repository;
 
 //import javax.annotation.PreDestroy;
 import jakarta.annotation.PreDestroy;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 @Repository(value = "db")
 public class PlayerRepositoryDB implements IPlayerRepository {
 
-    public PlayerRepositoryDB() {
+    private final SessionFactory sessionFactory;
 
+    public PlayerRepositoryDB() {
+        Properties properties = new Properties();
+        properties.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+        properties.put(Environment.URL, "jdbc:mysql://localhost:3306/rpg");
+        properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+        properties.put(Environment.HBM2DDL_AUTO, "update");
+        properties.put(Environment.USER, "root");
+        properties.put(Environment.PASS, ",L1u2s3i4e5");
+
+        sessionFactory = new Configuration()
+                .setProperties(properties)
+                .addAnnotatedClass(Player.class)
+                .buildSessionFactory();
     }
 
     @Override
