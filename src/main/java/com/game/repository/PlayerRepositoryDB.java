@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
 
 //import javax.annotation.PreDestroy;
@@ -35,12 +36,19 @@ public class PlayerRepositoryDB implements IPlayerRepository {
 
     @Override
     public List<Player> getAll(int pageNumber, int pageSize) {
-        return null;
+        Session session = sessionFactory.openSession();
+        int sizeLimit = pageNumber * pageSize;
+        int sizeOffset = sizeLimit - pageNumber;
+        NativeQuery<Player> query = session.createNativeQuery("select * from Employee limit :param_limit offset :param_offset" ,Player.class);
+        query.setParameter("param_limit", sizeLimit);
+        query.setParameter("param_offset", sizeOffset);
+        return query.list();
     }
 
     @Override
     public int getAllCount() {
-        return 0;
+        Session session = sessionFactory.openSession();
+        return session.createNamedQuery("Player_playerCount", Integer.class).getSingleResult();
     }
 
     @Override

@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 
+@org.hibernate.annotations.NamedQuery(
+        name = "Player_playerCount",
+        query = "select count(*) from Employee"
+)
 @Entity
 @Table(name = "player", schema = "rpg")
 public class Player {
