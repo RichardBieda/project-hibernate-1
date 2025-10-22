@@ -36,19 +36,20 @@ public class PlayerRepositoryDB implements IPlayerRepository {
 
     @Override
     public List<Player> getAll(int pageNumber, int pageSize) {
-        Session session = sessionFactory.openSession();
-        int sizeLimit = pageNumber * pageSize;
-        int sizeOffset = sizeLimit - pageNumber;
-        NativeQuery<Player> query = session.createNativeQuery("select * from Employee limit :param_limit offset :param_offset" ,Player.class);
-        query.setParameter("param_limit", sizeLimit);
-        query.setParameter("param_offset", sizeOffset);
-        return query.list();
+        try (Session session = sessionFactory.openSession()) {
+            int offset = (pageNumber - 1) - pageSize;
+            NativeQuery<Player> query = session.createNativeQuery("select * from Player limit :param_limit offset :param_offset", Player.class);
+            query.setParameter("param_limit", pageSize);
+            query.setParameter("param_offset", offset);
+            return query.list();
+        }
     }
 
     @Override
     public int getAllCount() {
-        Session session = sessionFactory.openSession();
-        return session.createNamedQuery("Player_playerCount", Integer.class).getSingleResult();
+        try (Session session = sessionFactory.openSession()) {
+            return session.createNamedQuery("Player_playerCount", Integer.class).getSingleResult();
+        }
     }
 
     @Override
