@@ -25,7 +25,7 @@ public class PlayerRepositoryDB implements IPlayerRepository {
         properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
         properties.put(Environment.HBM2DDL_AUTO, "update");
         properties.put(Environment.USER, "root");
-        properties.put(Environment.PASS, ",L1u2s3i4e5");
+        properties.put(Environment.PASS, "root");
 
         sessionFactory = new Configuration()
                 .setProperties(properties)
