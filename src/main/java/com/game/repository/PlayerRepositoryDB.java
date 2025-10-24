@@ -7,6 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 //import javax.annotation.PreDestroy;
@@ -38,10 +39,9 @@ public class PlayerRepositoryDB implements IPlayerRepository {
     @Override
     public List<Player> getAll(int pageNumber, int pageSize) {
         try (Session session = sessionFactory.openSession()) {
-            int offset = (pageNumber - 1) - pageSize;
             NativeQuery<Player> query = session.createNativeQuery("select * from Player limit :param_limit offset :param_offset", Player.class);
             query.setParameter("param_limit", pageSize);
-            query.setParameter("param_offset", offset);
+            query.setParameter("param_offset", pageNumber * pageSize);
             return query.list();
         }
     }
@@ -49,7 +49,8 @@ public class PlayerRepositoryDB implements IPlayerRepository {
     @Override
     public int getAllCount() {
         try (Session session = sessionFactory.openSession()) {
-            return session.createNamedQuery("Player_playerCount", Integer.class).getSingleResult();
+            Query<Long> query = session.createNamedQuery("Player_playerCount", Long.class);
+            return Math.toIntExact(query.uniqueResult());
         }
     }
 
@@ -57,9 +58,9 @@ public class PlayerRepositoryDB implements IPlayerRepository {
     public Player save(Player player) {
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
-            long id = (long)session.save(player);
+            session.save(player);
             tx.commit();
-            return session.get(Player.class, id);
+            return player;
         }
     }
 
@@ -67,9 +68,9 @@ public class PlayerRepositoryDB implements IPlayerRepository {
     public Player update(Player player) {
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
-            Player mergedPlayer = (Player)session.merge(player);
+            session.update(player);
             tx.commit();
-            return mergedPlayer;
+            return player;
         }
     }
 

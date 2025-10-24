@@ -6,7 +6,7 @@ import java.util.Date;
 
 @org.hibernate.annotations.NamedQuery(
         name = "Player_playerCount",
-        query = "select count(*) from Player"
+        query = "select count(p) from Player p"
 )
 @Entity
 @Table(name = "player", schema = "rpg")
